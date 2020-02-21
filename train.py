@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 # Imports
-import os, sys, time
+import os
+import time
 import numpy as np
 import tensorflow as tf
 import pickle
@@ -33,17 +34,17 @@ def train(d):
   # TRAINING OPTIMIZER
   global_step = tf.Variable(0, trainable=False, name='global_step')
   lr = tf.Variable(d.lr, trainable=False)
-  opt=tf.train.AdamOptimizer(learning_rate=lr)
+  opt=tf.train.AdamOptimizer(learning_rate=lr, beta1=0., beta2=0.999, epsilon=1e-8)
   #
   log_file = open(os.path.join(d.workdir, "logfile.txt"), 'w+')
-  log_device_file = open(os.path.join(d.workdir, "devicefile.log"), 'w+')
+  # log_device_file = open(os.path.join(d.workdir, "devicefile.log"), 'w+')
   # Model save path
   model_path = os.path.join(d.workdir, "ckpt")
   dp.create_folder(model_path)
   # initialize dataset
   with tf.name_scope('dataset'):
     dataset = tf.data.Dataset.from_tensor_slices(trainSpeechNames) \
-                           .map(func).batch(16)
+                           .map(func).batch(batch_size)
     iterator = dataset.make_initializable_iterator()
     Ref, Input = iterator.get_next()
   Output = end_to_end(Input, True, d)
@@ -61,7 +62,7 @@ def train(d):
   config.gpu_options.allow_growth=True
   #config.log_device_placement = True
   sess=tf.Session(config=config)
-  train_writer = tf.summary.FileWriter(os.path.join(d.workdir, "log/train"), sess.graph)
+  # train_writer = tf.summary.FileWriter(os.path.join(d.workdir, "log/train"), sess.graph)
   sess.run(tf.global_variables_initializer())
   sess.run(iterator.initializer, feed_dict={trainSpeechNames: train_speech_names})
   # Model save
@@ -69,11 +70,11 @@ def train(d):
   #saver.restore(sess, os.path.join(d.workdir, "models/se_model16_15000.ckpt"))
   #sess.run(tf.assign(lr, d.lr))
 
-  loss_train = np.zeros(10000)
-  train_batchs = len(train_speech_names) // batch_size   # Training set batch number
+  # train_batchs = len(train_speech_names) // batch_size   # Training set batch number
   val_batchs = math.ceil(len(val_speech_names) / batch_size)       # Verification set batch number
   loss_val = np.zeros(val_batchs)
 
+  tmp_tr_loss = 0.0
   while True:
     # TRAINING ITERATION
     try:
@@ -83,11 +84,12 @@ def train(d):
       np.random.shuffle(train_speech_names)
       sess.run(iterator.initializer, feed_dict={trainSpeechNames: train_speech_names})
       continue
-    loss_train[gs % 5000] = loss_vec
+    tmp_tr_loss += loss_vec
 
-    if gs % 50 == 0:
-      train_writer.add_summary(summary, gs)
-    if gs % 50 == 0:
+    # if gs % 50 == 0:
+    #   train_writer.add_summary(summary, gs)
+    n_prt = 1000
+    if gs % n_prt == 0:
       val_dataset = tf.data.Dataset.from_tensor_slices(val_speech_names) \
                                    .map(func).batch(16)
       val_iteator = val_dataset.make_one_shot_iterator()
@@ -102,7 +104,8 @@ def train(d):
         val_loss = sess.run(val_loss_fn)
         loss_val[i] = val_loss
       val_loss_mean = np.mean(loss_val)
-      mean_loss_train = np.mean(loss_train[: 5000])
+      mean_loss_train = tmp_tr_loss / n_prt
+      tmp_tr_loss = 0.0
       print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+
             "\tbatch: %d\ttrain loss: %.4f\tvalidation loss: %.4f\n" %
             (gs, mean_loss_train, val_loss_mean))
@@ -117,17 +120,3 @@ def train(d):
 
 if __name__ == "__main__":
   train(cfg)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
