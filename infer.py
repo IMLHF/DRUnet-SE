@@ -10,7 +10,7 @@ import tensorflow as tf
 from tqdm import tqdm
 
 import config as cfg
-from model import end_to_end
+from model import DRUnet
 import data_prepare as dp
 
 def infer(d, ckpt):
@@ -23,11 +23,12 @@ def infer(d, ckpt):
 
   # Defining model
   Input = tf.placeholder(tf.float32, shape=[batch_size, height], name='input')
-  Output = end_to_end(Input, False, d)
+  drunet_model = DRUnet(Input, None, False, d)
+  Output = drunet_model.enhanced_wav_batch
   # INITIALIZE GPU CONFIG
   config=tf.ConfigProto()
   config.gpu_options.allow_growth=True
-  sess=tf.Session(config=config)
+  sess=tf.compat.v1.Session(config=config)
   # Initialization parameters
   sess.run(tf.global_variables_initializer())
   # Model reading
