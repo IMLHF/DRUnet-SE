@@ -18,6 +18,9 @@ rm */__pycache__* -rf
 if [ "$site" == "p40" ]; then
   echo "To $user@$site:/home/zhangwenbo5/lihongfeng/dcUnet-se/$2"
   rsync -avh -e "ssh -p 22 -o ProxyCommand='ssh -p 8695 zhangwenbo5@120.92.114.84 -W %h:%p'" --exclude-from='.gitignore' ./* zhangwenbo5@ksai-P40-2:/home/zhangwenbo5/lihongfeng/dcUnet-se/$2
+elif [ "$site" == "p40ali" ]; then
+  echo "To $user@$site:/home/zhangwenbo5/lihongfeng/dcUnet-se/$2"
+  rsync -avh -e "ssh -p 6665" --exclude-from='.gitignore' ./* zhangwenbo5@47.92.169.196:/home/zhangwenbo5/lihongfeng/dcUnet-se/$2
 elif [ "$site" == "15123" ] || [ "$site" == "15041" ] || [ "$site" == "15043" ]; then
   echo "To $user@$site:~/worklhf/dcUnet/$2"
   rsync -avh -e 'ssh -p '$site --exclude-from='.gitignore' ./* $user@speaker.is99kdf.xyz:~/worklhf/deUnet/$2
