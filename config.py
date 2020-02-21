@@ -17,3 +17,11 @@ selection = 9152            # sequence length
 
 #
 batch_size = 16
+
+#
+max_train_step = 200000
+
+#
+feature_type = "DCT" # DCT | AbsDFT | ConcatDFT
+mask_type = "IRM" # IRM | cIRM | polar_cIRM
+frame_pad_end = True
