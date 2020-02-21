@@ -5,9 +5,10 @@
 # Imports
 import numpy as np
 import tensorflow as tf
+import config as conf
 
 def frame(signals, frame_length, frame_step, winfunc=tf.signal.hamming_window):
-  framed_signals = tf.signal.frame(signals, frame_length, frame_step, pad_end=False)
+  framed_signals = tf.signal.frame(signals, frame_length, frame_step, pad_end=conf.frame_pad_end)
   if winfunc is not None:
     window = winfunc(frame_length, dtype=tf.float32)
     framed_signals *= window
