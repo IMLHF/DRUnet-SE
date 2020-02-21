@@ -32,7 +32,7 @@ def infer(d, ckpt):
   noisy_testset_wav = os.path.join(d.workdir, "data/noisy_testset_wav")
   test_speech_names = [na.split(".")[0] for na in os.listdir(noisy_testset_wav) if na.lower().endswith(".wav")]
   test_speech_names.sort()
-  denoised_dir = os.path.join(d.workdir, "data/denoised")
+  denoised_dir = os.path.join(d.workdir, "denoised")
   dp.create_folder(denoised_dir)
   #################################################################################################
   for name in tqdm(test_speech_names):

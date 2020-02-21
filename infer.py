@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 # Imports
-import os, sys, time
+import os
+import sys
 import math
 import numpy as np
 from scipy.io import wavfile
@@ -35,7 +36,8 @@ def infer(d, ckpt):
   # Read test data
   noisy_testset_wav = os.path.join(d.workdir, "data/noisy_testset_wav")
   test_speech_names = [na.split(".")[0] for na in os.listdir(noisy_testset_wav) if na.lower().endswith(".wav")]
-  denoised_dir = os.path.join(d.workdir, "data/denoised")
+  test_speech_names.sort()
+  denoised_dir = os.path.join(d.workdir, "denoised")
   dp.create_folder(denoised_dir)
   #################################################################################################
   for name in tqdm(test_speech_names):
@@ -55,10 +57,10 @@ def infer(d, ckpt):
       #slice_noise *= window
       inputData = slice_noise[np.newaxis, ...]
 
-      from model import Analysis
-      spec = Analysis(Input, d.n_window, d.stride)
-      tmp = sess.run(spec, feed_dict={Input: inputData})
-      print(np.shape(tmp))
+      # from model import Analysis
+      # spec = Analysis(Input, d.n_window, d.stride)
+      # tmp = sess.run(spec, feed_dict={Input: inputData})
+      # print(np.shape(tmp))
 
       output_slice = sess.run(Output, feed_dict={Input: inputData})
       output_slice = np.array(output_slice).squeeze()
