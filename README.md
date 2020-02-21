@@ -1,11 +1,11 @@
 # END-TO-END-SPEECH-ENHANCEMENT-BASED-ON-DISCRETE-COSINE-TRANSFORM
-Reference papaer: END-TO-END SPEECHENHANCEMENT BASED ON DISCRETE COSINE TRANSFORM 
+Reference papaer: END-TO-END SPEECHENHANCEMENT BASED ON DISCRETE COSINE TRANSFORM
 
 arXiv: https://arxiv.org/abs/1910.07840
 
 Envirments setup:
 
-  1)Tensorflow 1.13
+  1)Tensorflow 1.14
 
   2)librosa, numpy, scipy
 
